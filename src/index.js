@@ -1,2 +1,1 @@
-import './destructuring';
-import './setMap';
+console.log('mobx')

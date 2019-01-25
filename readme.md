@@ -12,3 +12,6 @@
     package.json 内 script命令行
 
     启动：npm start
+
+
+## MobX
