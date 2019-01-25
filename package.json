@@ -2,7 +2,9 @@
   "scripts": {
     "start": "webpack-dev-server --inline --progress --config ./webpack.config.js --open"
   },
-  "dependencies": {},
+    "dependencies": {
+      "current-git-branch": "^1.1.0"
+    },
   "devDependencies": {
     "eslint-config-airbnb": "^17.1.0",
     "hot-module-replacement": "^3.0.3",
