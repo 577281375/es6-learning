@@ -1,7 +1,4 @@
 import "./src/index.js";
-import { observable } from "mobx";
-class Todo {
-    id = Math.random();
-    @observable title = "";
-    @observable finished = false;
-}
+console.log('Counter-------', 'Counter')
+
+

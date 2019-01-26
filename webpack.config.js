@@ -5,7 +5,7 @@ var path = require('path');
 
 module.exports = (env) => {
     const config = {
-        devtool: 'eval',
+        devtool: 'source-map',
         entry: {
             main: './index.js'
         },
@@ -16,7 +16,7 @@ module.exports = (env) => {
         module: {
             rules: [
                 {
-                    test: /\.m?js$/,
+                    test: /\.(js|jsx)$/,
                     exclude: /(node_modules|bower_components)/,
                     use: {
                         loader: 'babel-loader'
@@ -26,9 +26,9 @@ module.exports = (env) => {
         },
         devServer: {
             contentBase: './dist',
-            hot: true,
             overlay: true,
             inline: true,
+            hot: true
         },
         mode: 'development',
         plugins: [
@@ -39,9 +39,11 @@ module.exports = (env) => {
             })
         ],
         resolve: {
+            extensions: ['*', '.js', '.jsx'],
             alias: {
                 'utils': path.join(__dirname, '/src/utils'),
-            }
+            },
+
         }
     }
     return config;
