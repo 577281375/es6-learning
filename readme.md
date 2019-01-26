@@ -17,7 +17,8 @@
 ## MobX
 ![an in-depth explanation of MobX](https://hackernoon.com/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254)
 
-
+![Redux vs MobX](https://www.sitepoint.com/redux-vs-mobx-which-is-best/)
+![Easy MobX and Redux Comparison](https://www.leighhalliday.com/easy-mobx-redux-comparison)
 
 quiz:
     1.写一个这样的组建 我觉得是需要的 业务场景

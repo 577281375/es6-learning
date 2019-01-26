@@ -2,13 +2,14 @@
  * @Author: songxue
  * @Date: 2019-01-26 16:08:41
  * @Last Modified by: songxue
- * @Last Modified time: 2019-01-26 18:03:10
+ * @Last Modified time: 2019-01-26 18:12:58
  * @Module Name: Ten minute introduction to MobX and React eg: https://mobx.js.org/getting-started.html
+ *
  */
 
 import React, { Component } from 'react';
 import { observable, computed, autorun } from 'mobx';
-import { observer } from 'mobx-react';
+import { inject, observer, Provider} from "mobx-react";
 
 
 
@@ -41,6 +42,10 @@ class ObservableTodoStore {
     }
 }
 
+
+const Store = new ObservableTodoStore();
+
+@inject('store')
 @observer
 class TodoList extends Component {
     handleClick = () => {
@@ -52,7 +57,7 @@ class TodoList extends Component {
         store.inputValue = e.target.value;
     }
     render() {
-        const { store: { report, todos, inputValue } } = this.props;
+        const { store: { report, todos, inputValue}} = this.props;
         return (
             <div>
                 {report}
@@ -70,15 +75,15 @@ class TodoList extends Component {
     }
 }
 
-
+@inject('store')
 @observer
 class TodoView extends Component {
-
     handleClick = (e) => {
+        const { store: { inputValue } } = this.props;
         const todo = this.props.todo;
-        const { inputValue } = this.props;
         todo.task = inputValue;
     }
+
     render() {
         const { todo } = this.props;
         return (
@@ -87,7 +92,6 @@ class TodoView extends Component {
     }
 }
 
-// quiz : store 组建间的通信 mobx-react inject
 
 // @observer
 // class TodoList extends React.Component {
@@ -150,7 +154,11 @@ class TodoView extends Component {
 class Todo extends React.Component {
     render() {
         return (
-            <TodoList store={new ObservableTodoStore()} />
+            <Provider store={Store}>
+               <TodoList />
+
+                {/* <TodoList store={new ObservableTodoStore()} /> */}
+                </Provider>
         )
     }
 }
