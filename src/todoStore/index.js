@@ -2,95 +2,85 @@
  * @Author: songxue
  * @Date: 2019-01-26 16:08:41
  * @Last Modified by: songxue
- * @Last Modified time: 2019-01-26 18:12:58
+ * @Last Modified time: 2019-01-27 14:39:03
  * @Module Name: Ten minute introduction to MobX and React eg: https://mobx.js.org/getting-started.html
  *
  */
 
 import React, { Component } from 'react';
-import { observable, computed, autorun } from 'mobx';
-import { inject, observer, Provider} from "mobx-react";
-
-
-
-class ObservableTodoStore {
-    @observable todos = [];
-    @observable pendingRequests = 0;
-    @observable inputValue = '';
-
-    constructor() {
-        autorun(() => console.log(this.report));
-    };
-    @computed get completedTodosCount() {
-        return this.todos.filter(
-            todo => todo.completed === true
-        ).length;
-    }
-    @computed get report() {
-        if (this.todos.length === 0) {
-            return "<none>";
-        }
-        return `Next todo: "${this.todos[0].task}".` +
-            `Progress: ${this.completedTodosCount}/${this.todos.length}`;
-    }
-    addTodo(task) {
-        this.todos.push({
-            task: task,
-            completed: false,
-            assignee: null
-        })
-    }
-}
-
-
-const Store = new ObservableTodoStore();
+import { inject, observer, Provider } from "mobx-react";
+import { observable } from 'mobx';
+import TodoView from './component';
+import store from './store';
 
 @inject('store')
 @observer
 class TodoList extends Component {
-    handleClick = () => {
-        const { store: { inputValue } } = this.props;
-        this.props.store.addTodo(inputValue);
+    @observable handleTodoIndex = null;
+    handleClickAdd = () => {
+        const { store: { inputValueAdd } } = this.props;
+        this.props.store.addTodo(inputValueAdd);
     }
-    handleChange = (e) => {
+    handleClickChange = (e) => {
         const { store } = this.props;
-        store.inputValue = e.target.value;
+        store.changeTodo(store.inputValueChange, this.handleTodoIndex);
+        store.visible = false;
+    }
+
+    handleChange = (name) => (e) => {
+        const { store } = this.props;
+        store[`inputValue${name}`] = e.target.value;
+    }
+
+
+    handleTodo = (index) => {
+        this.handleTodoIndex = index;
     }
     render() {
-        const { store: { report, todos, inputValue}} = this.props;
+        const { store: { report, todos, visible } } = this.props;
         return (
             <div>
                 {report}
                 <ul>
                     {
                         todos.map(
-                            (todo, idx) => <TodoView key={idx} todo={todo} inputValue={inputValue}/>
+                            (todo, idx) => <TodoView
+                                key={idx}
+                                todo={todo}
+                                idx={idx}
+                                handle={this.handleTodo}
+                            />
                         )
                     }
                 </ul>
-                <input placeholder='place add item' onChange={this.handleChange} value={inputValue} />
-                <button onClick={this.handleClick}>add item</button>
+                <input placeholder='place add item' onChange={this.handleChange('Add')} />
+                <button onClick={this.handleClickAdd}>add item</button>
+                {
+                    visible &&
+                    <div>
+                        <input placeholder='place change item' onChange={this.handleChange('Change')} />
+                        <button onClick={this.handleClickChange}>change item</button>
+                    </div>
+                }
             </div>
         )
     }
 }
 
-@inject('store')
-@observer
-class TodoView extends Component {
-    handleClick = (e) => {
-        const { store: { inputValue } } = this.props;
-        const todo = this.props.todo;
-        todo.task = inputValue;
-    }
-
+class Todo extends React.Component {
     render() {
-        const { todo } = this.props;
         return (
-            <div onDoubleClick={this.handleClick}>{todo.task}</div>
+            <Provider store={store.todoStore}>
+                <TodoList />
+            </Provider>
         )
     }
 }
+
+export default Todo;
+
+
+
 
 
 // @observer
@@ -149,85 +139,65 @@ class TodoView extends Component {
 //         todo.task = prompt('Task name', todo.task) || todo.task;
 //     }
 // }
-
-
-class Todo extends React.Component {
-    render() {
-        return (
-            <Provider store={Store}>
-               <TodoList />
-
-                {/* <TodoList store={new ObservableTodoStore()} /> */}
-                </Provider>
-        )
-    }
-}
-
-
-export default Todo;
-
-
-
-
-class TodoStoreDemo {
-    todos = [];
-    get completedTodosCount() {
-        return this.todos.filter(
-            todo => todo.completed === true
-        ).length;
-    }
-    report() {
-        if (this.todos.length === 0) {
-            return "<none>";
-        }
-        return `Next todo: "${this.todos[0].task}".` +
-            `Progress: ${this.completedTodosCount}/${this.todos.length}`;
-    }
-    addTodo(task) {
-        this.todos.push({
-            task: task,
-            completed: false,
-            assignee: null
-        })
-    }
-}
+// class TodoStoreDemo {
+//     todos = [];
+//     get completedTodosCount() {
+//         return this.todos.filter(
+//             todo => todo.completed === true
+//         ).length;
+//     }
+//     report() {
+//         if (this.todos.length === 0) {
+//             return "<none>";
+//         }
+//         return `Next todo: "${this.todos[0].task}".` +
+//             `Progress: ${this.completedTodosCount}/${this.todos.length}`;
+//     }
+//     addTodo(task) {
+//         this.todos.push({
+//             task: task,
+//             completed: false,
+//             assignee: null
+//         })
+//     }
+// }
 
 
 
 
-class TodoStore extends Component {
-    constructor() {
-        super();
-        // if use TodoStoreDemo class
-        // this.demo = new TodoStoreDemo();
-        // if use TodoStoreDemo class
-        this.demo = new ObservableTodoStore();
+// class TodoStore extends Component {
+//     constructor() {
+//         super();
+//         // if use TodoStoreDemo class
+//         // this.demo = new TodoStoreDemo();
+//         // if use TodoStoreDemo class
+//         this.demo = new ObservableTodoStore();
 
-        this.state = {
-            value: '',
-            report: '',
-        }
-    }
+//         this.state = {
+//             value: '',
+//             report: '',
+//         }
+//     }
 
-    handleChange = (e) => {
-        this.setState({
-            value: e.target.value,
-        })
-    }
-    handleClick = () => {
-        this.demo.addTodo(this.state.value);
+//     handleChange = (e) => {
+//         this.setState({
+//             value: e.target.value,
+//         })
+//     }
+//     handleClick = () => {
+//         this.demo.addTodo(this.state.value);
 
-        // if use TodoStoreDemo class
-        // console.log(this.demo.report());
-    }
-    render() {
-        const { value } = this.state;
-        return (
-            <div>
-                <input onChange={this.handleChange} value={value} />
-                <br />
-                <button onClick={this.handleClick}>console</button>
-            </div>
-        )
-    }
-}
+//         // if use TodoStoreDemo class
+//         // console.log(this.demo.report());
+//     }
+//     render() {
+//         const { value } = this.state;
+//         return (
+//             <div>
+//                 <input onChange={this.handleChange} value={value} />
+//                 <br />
+//                 <button onClick={this.handleClick}>console</button>
+//             </div>
+//         )
+//     }
+// }
