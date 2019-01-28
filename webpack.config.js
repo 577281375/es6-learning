@@ -1,17 +1,18 @@
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var branchName = require('current-git-branch');
-var path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const branchName = require('current-git-branch');
+const path = require('path');
+const DashboardPlugin = require('webpack-dashboard/plugin');
 
-module.exports = (env) => {
+module.exports = () => {
     const config = {
         devtool: 'eval',
         entry: {
-            main: './index.js'
+            main: './index.js',
         },
         output: {
             path: path.resolve(__dirname, './dist'),
-            filename: 'bundle.js'
+            filename: 'bundle.js',
         },
         devServer: {
             contentBase: './dist',
@@ -25,13 +26,14 @@ module.exports = (env) => {
             new HtmlWebpackPlugin({
                 template: './index.html',
                 title: `${branchName()} demo test`,
-            })
+            }),
+            new DashboardPlugin(),
         ],
         resolve: {
             alias: {
-                'utils': path.join(__dirname, '/src/utils'),
-            }
-        }
-    }
+                utils: path.join(__dirname, '/src/utils'),
+            },
+        },
+    };
     return config;
 };

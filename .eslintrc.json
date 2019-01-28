@@ -11,6 +11,17 @@
         "es6": true
     },
     "rules": {
-        "semi": 2
+        "semi": 2,
+        "quotes": [
+            2,
+            "single"
+        ],
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ]
     }
 }
